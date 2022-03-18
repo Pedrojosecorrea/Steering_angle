@@ -1,53 +1,53 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 
 #list for angles
 Hav=[]
 sav=[]
-
-#function keyboard input
-def inputav():
-    sa = input("Please enter Angle value in degree: \n")
-    sa=float(sa)
-    V = input("Please enter Speed value in m/s: \n")
-    V=float(V)
-
-    return sa, V
-    
-#function for heading angle
-def Head_angle(sa,V,L):
-    Ha=(V/L)*np.arctan(sa)
-    Ha=np.rad2deg(Ha)  
-    return Ha
-
 #Car parameters
 L=1.3 #m
 
+#function for heading angle
+def Head_angle(L):
+    # keyboard input
+    sa = input("Please enter Angle value in degree: \n")
+    V = input("Please enter Speed value in Km/h: \n")
+    #convert string to float
+    sa=float(sa)
+    V=float(V) #km/h
+    V=(5/18)*(V) #m/s
+    #Heading angle calculaten
+    Ha=(V/L)*np.arctan(np.deg2rad(sa))
+    Ha=np.rad2deg(Ha)
+    return Ha, sa
 
-while True:
-    #import functions
-    sa,V=inputav()
-    Ha =Head_angle(np.deg2rad(sa),V,L)
-    #add calculations to its lists
-    Hav.append(Ha)
-    sav.append(sa)
-    print("Steering Angle= {}, Heading Angle= {}".format(sa,Ha))
-    print(sav,Hav)
+try:
+    while True:
+        #import function
+        Ha,sa =Head_angle(L)
+        #add calculations to its lists
+        Hav.append(Ha)
+        sav.append(sa)
+        print("Steering Angle= {}, Heading Angle= {}".format(sa,Ha))
+        print(sav,Hav)
 
-    #while loop interrupt
-    i = input('Please enter \'Y\' or \'N\': ')
-    if i.strip() == 'Y':
-        break
+except KeyboardInterrupt:
+    pass
 
-#plot results
-fig, ax = plt.subplots(1,1)
-fig.set_figheight(8)
-fig.set_figwidth(15)
-fig.suptitle('Angle')
-ax.plot(sav,'-',label="Steering Angle")
-ax.plot(Hav,'-',label="Heading Angle")
-ax.set(xlabel='# Samples', ylabel='Angle[°]')
-ax.legend(loc="upper right")
+for i in range(len(Hav)):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='polar', xlim=(-180, 180))
+    ax.set_theta_offset(.5*np.pi) # point the origin towards the top
+    ax.set_thetamin(-180) # set the limits
+    ax.set_thetamax(180)
+    ax.set_thetagrids(range(-180,180, 30))
+    ax.set_title('Steering vs. Heading', pad=-50) # add title and relocate negative value lowers the location
 
-plt.show()
+    arrsa = plt.arrow(np.deg2rad(sav[i]), 0, 0, 0.8, alpha = 0.5, width = 0.020,
+                    edgecolor = 'black', facecolor = 'green', lw = 2, zorder = 5)
+
+    arrha = plt.arrow(np.deg2rad(Hav[i]), 0, 0, 1, alpha = 0.5, width = 0.020,
+                    edgecolor = 'black', facecolor = 'green', lw = 2, zorder = 5)
+
+    plt.show()
